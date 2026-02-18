@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # السرفيس الأول: PostgreSQL Database
+  postgresdb:
+    image: postgres:15
+    container_name: nest_postgres_container
+    environment:
+      POSTGRES_PASSWORD: password # نفس المودباس اللي درتي في الكود
+      POSTGRES_DB: test_db # نفس الداتابيز
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # السرفيس الثاني: NestJS App
+  nestjs-app:
+    build: .
+    container_name: nest_app_container
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgresdb:
+        condition: service_healthy
+    environment:
+      # مهم بزاف: هنا كنعطيو الاعدادات باش يفهم يقلب على الداتابيز
+      DB_HOST: postgresdb
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: password
+      DB_NAME: test_db
+
+volumes:
+  db_data:
