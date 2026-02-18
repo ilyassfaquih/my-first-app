@@ -1,5 +1,13 @@
 node_modules
 dist
+npm-debug.log
 .git
 .gitignore
-Dockerfile
+.env
+.env.*
+!.env.example
+coverage
+.nyc_output
+.vscode
+.idea
+*.md
